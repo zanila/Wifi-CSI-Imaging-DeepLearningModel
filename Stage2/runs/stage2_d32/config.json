@@ -1,0 +1,26 @@
+{
+  "data_dir": "Stage1/build_dataset_output",
+  "out_dir": "./Stage2/runs/stage2_d32",
+  "latent_dim": 32,
+  "mask_size": 32,
+  "dropout": 0.2,
+  "epochs": 100,
+  "batch_size": 32,
+  "lr": 0.001,
+  "weight_decay": 1e-05,
+  "patience": 15,
+  "lr_patience": 5,
+  "pos_weight": null,
+  "threshold": 0.5,
+  "seed": 42,
+  "num_workers": 2,
+  "device": "cpu",
+  "num_params": 762368,
+  "norm_stats": {
+    "mean": 11.713688850402832,
+    "std": 6.311122894287109
+  },
+  "n_train": 850,
+  "n_val": 181,
+  "n_test": 183
+}

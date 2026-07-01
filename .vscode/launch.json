@@ -1,0 +1,168 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: csi_tensor_construction",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--csi_csv", "Dataset/csi.csv",
+                "--csi_npy", "Dataset/csiComplex.npy",
+                "--output_dir", "Stage1/csi_tensor_construction_output",
+                "--image_dir", "Dataset/640",
+                "--T", "64",
+                "--window_sec", "1.0",
+                "--stride_sec", "0.5",
+                "--aggregation", "mean",
+                "--imputation", "linear"
+            ]
+        },
+        {
+            "name": "Python Debugger: ground_truth_extraction",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--image_dir", "Dataset/640",
+                "--output_dir", "Stage1/gt_output",
+                "--mask_size", "32",
+                "--bbox_padding", "0.1",
+                "--confidence_threshold", "0.5"
+            ]
+        },
+        {
+            "name": "Python Debugger: build_datasets",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--csi_tensors", "Stage1/csi_tensor_construction_output/X_csi_tensors.npy",
+                "--csi_image_ids", "Stage1/csi_tensor_construction_output/y_image_ids.npy",
+                "--masks", "Stage1/gt_output/Y_masks.npy",
+                "--mask_image_ids", "Stage1/gt_output/image_ids.npy",
+                "--output_dir", "Stage1/build_dataset_output",
+                "--seq_len", "10",
+                "--stride", "1",
+                "--write_splits"
+            ]
+        },
+        {
+            "name": "Python Debugger: train_stage2",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--data_dir", "Stage1/build_dataset_output",
+                "--out_dir", "./Stage2/runs/stage2_d32",
+                "--latent_dim", "32",
+                "--mask_size", "32",
+                "--dropout", "0.2",
+                "--epochs", "100",
+                "--batch_size", "32",
+                "--lr", "1e-3",
+                "--weight_decay", "1e-5",
+                "--patience", "15",
+                //"--pos_weight", "None",
+                "--threshold", "0.5",
+                "--seed", "42",
+                "--num_workers", "2",
+                //"--device", "None",
+            ]
+        },
+        {
+            "name": "Python Debugger: evaluate_stage2",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--data_dir", "Stage1/build_dataset_output",
+                "--run_dir", "Stage2/runs/stage2_d32",
+                "--split", "test",
+                "--threshold", "0.5",
+                "--batch_size", "32",
+                "--n_examples", "12",
+                //"--device", "None",
+                "--num_workers", "2"
+            ]
+        },
+        {
+            "name": "Python Debugger: train_stage3 Variant A",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--variant", "a",
+                "--data_dir", "Stage1/build_dataset_output",
+                "--out_dir", "./Stage3/runs/exp2_A_warmstart",
+                "--latent_dim", "32",
+                "--lstm_hidden", "32",
+                "--lstm_layers", "1",
+                //"--bidirectional", "True",
+                //"--unidirectional", "True",
+                "--mask_size", "32",
+                "--dropout", "0.2",
+                "--lstm_dropout", "0.0",
+                //"--prev_embed_dim", "64",
+                //"--teacher_forcing_ratio", "1.0",
+                "--init_encoder_from", "Stage2/runs/stage2_d32/best.pt",
+                //"--freeze_encoder", "True",
+                "--epochs", "100",
+                "--batch_size", "32",
+                "--lr", "1e-3",
+                "--weight_decay", "1e-5",
+                "--patience", "15",
+                "--lr_patience", "5",
+                //"--pos_weight", "None",
+                "--threshold", "0.5",
+                "--num_workers", "2",
+                //"--in_memory", "True",
+                "--seed", "42"
+            ]
+        },
+        {
+            "name": "Python Debugger: train_stage3 Variant B",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+                "--variant", "b",
+                "--data_dir", "Stage1/build_dataset_output",
+                "--out_dir", "./Stage3/runs/exp3_B_d32_h64_tf05_embed128",
+                "--latent_dim", "32",
+                "--lstm_hidden", "64",
+                "--lstm_layers", "1",
+                //"--bidirectional", "True",
+                //"--unidirectional",
+                "--mask_size", "32",
+                "--dropout", "0.2",
+                "--lstm_dropout", "0.0",
+                "--prev_embed_dim", "128",
+                "--teacher_forcing_ratio", "0.5",
+                //"--init_encoder_from", "Stage2/runs/stage2_d32/best_model.pth",
+                //"--freeze_encoder", "True",
+                "--epochs", "100",
+                "--batch_size", "32",
+                "--lr", "1e-3",
+                "--weight_decay", "1e-5",
+                "--patience", "15",
+                "--lr_patience", "5",
+                //"--pos_weight", "None",
+                "--threshold", "0.5",
+                "--num_workers", "2",
+                //"--in_memory", "True",
+                "--seed", "42"
+            ]
+        }
+    ]
+}

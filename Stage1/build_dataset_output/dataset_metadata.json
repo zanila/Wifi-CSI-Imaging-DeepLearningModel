@@ -1,0 +1,63 @@
+{
+  "created": "2026-06-05T20:09:16.400322",
+  "section": "3.3.3 \u2014 Temporal Alignment and Dataset Construction",
+  "seq_len": 10,
+  "stride": 1,
+  "d_frame": {
+    "X_shape": [
+      1216,
+      64,
+      52
+    ],
+    "Y_shape": [
+      1216,
+      32,
+      32
+    ],
+    "stage": "Stage 2 (CNN + MLP)",
+    "stats": {
+      "N": 1216,
+      "matched": 1216,
+      "missing": 0,
+      "fg_ratio_mean": 0.13841488486842105,
+      "fg_ratio_std": 0.05171227209910153,
+      "fg_ratio_min": 0.068359375,
+      "fg_ratio_max": 0.34375,
+      "zero_fg_count": 0
+    }
+  },
+  "d_variant_a": {
+    "X_shape": [
+      1207,
+      10,
+      64,
+      52
+    ],
+    "Y_shape": [
+      1207,
+      32,
+      32
+    ],
+    "target_idx_in_window": 9,
+    "stage": "Stage 3 Variant A (CNN + LSTM \u2192 1 mask via last hidden state)"
+  },
+  "d_seq": {
+    "X_shape": [
+      1207,
+      10,
+      64,
+      52
+    ],
+    "Y_shape": [
+      1207,
+      10,
+      32,
+      32
+    ],
+    "stage": "Stage 3 Variant B (CNN + LSTM \u2192 mask per time step)"
+  },
+  "notes": {
+    "stride_warning": "stride=1 produces overlapping sequences sharing 9 of 10 CSI tensors. Use temporal block-based splitting (--write_splits) to prevent leakage.",
+    "within_tensor_dynamics": "The CNN encoder compresses 64 frames of intra-second dynamics into a single z. The LSTM operates only at the inter-tensor (~1 Hz) timescale."
+  }
+}
